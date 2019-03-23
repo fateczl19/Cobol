@@ -1,0 +1,439 @@
+
+ SP18202.COB                             Fri Oct 05 10:50:11 2018    Page   1
+ line number source line   Microsoft COBOL                       Version 2.20
+
+   1         IDENTIFICATION DIVISION.
+   2         PROGRAM-ID. SP18202.
+   3         AUTHOR. WILLIAM RODRIGUES BRITO.
+   4        **************************************
+   5        * MANUTENCAO DO CADASTRO DE CARGOS   *
+   6        **************************************
+   7        *----------------------------------------------------------------
+   8         ENVIRONMENT DIVISION.
+   9         CONFIGURATION SECTION.
+  10         SPECIAL-NAMES.
+  11                           DECIMAL-POINT IS COMMA.
+  12         INPUT-OUTPUT SECTION.
+  13         FILE-CONTROL.
+  14         SELECT CARGOS ASSIGN TO DISK
+  15                      ORGANIZATION IS INDEXED
+  16                      ACCESS MODE  IS DYNAMIC
+  17                      RECORD KEY   IS CAR-COD
+  18                      FILE STATUS  IS ST-ERRO
+  19                      ALTERNATE RECORD KEY IS CAR-DENOM
+  20                                              WITH DUPLICATES.
+  21        *
+  22        *-----------------------------------------------------------------
+  23         DATA DIVISION.
+  24         FILE SECTION.
+  25         FD CARGOS
+  26                 LABEL RECORD IS STANDARD
+  27                 VALUE OF FILE-ID IS "CARGO.DAT".
+  28         01 REGCARGO.
+  29                  03 CAR-COD          PIC 9(04).
+  30                  03 CAR-DENOM        PIC X(20).
+  31                  03 CAR-TS           PIC 9(01).
+  32                  03 CAR-TSC          PIC X(12).
+  33                  03 CAR-NIVEL        PIC 9(01).
+  34                  03 CAR-NIVELC       PIC X(15).
+  35                  03 CAR-SALB         PIC 9(06).
+  36                  03 CAR-TRISC        PIC 9(01).
+  37                  03 CAR-TRISCC       PIC X(12).
+  38                  03 CAR-TSITU        PIC 9(01).
+  39                  03 CAR-TSITUC       PIC X(12).
+  40    
+  41        *
+  42        *-----------------------------------------------------------------
+  43         WORKING-STORAGE SECTION.
+  44         77 W-SEL        PIC 9(01) VALUE ZEROS.
+  45         77 W-CONT       PIC 9(06) VALUE ZEROS.
+  46         77 W-OPCAO      PIC X(01) VALUE SPACES.
+  47         77 ST-ERRO      PIC X(02) VALUE "00".
+  48         77 W-ACT        PIC 9(02) VALUE ZEROS.
+  49         77 MENS         PIC X(50) VALUE SPACES.
+  50         77 LIMPA        PIC X(50) VALUE SPACES.
+  51        *
+  52         01 TABRISCO.
+  53            03 TR1 PIC X(48) VALUE
+  54            "BAIXO       ALTO        MEDIO       GRAVE     ".
+  55            03 TR2 PIC X(12) VALUE "SEM RISCO   ".
+  56    
+  57         01 TABAUX1 REDEFINES TABRISCO.
+
+ SP18202.COB                             Fri Oct 05 10:50:11 2018    Page   2
+ line number source line   Microsoft COBOL                       Version 2.20
+
+  58             03 TDRISC       PIC X(12) OCCURS 10 TIMES.
+  59        *
+  60         01 TABSALARIO.
+  61            03 TS1 PIC X(48) VALUE
+  62            "HORISTA     MENSALISTA  DIARISTA    COMISSIOND  ".
+  63    
+  64         01 TABAUX2 REDEFINES TABSALARIO.
+  65             03 TDSALR       PIC X(12) OCCURS 10 TIMES.
+  66        *
+  67         01 TABNIVEL.
+  68            03 TN1 PIC X(48) VALUE
+  69            "PRESIDENCIA DIRETORIA   GERENCIA    SUPERVISAO".
+  70            03 TN2 PIC X(48) VALUE
+  71            "COORDENAC   OPERACIONAL ADMINISTRTV TECNICO   ".
+  72            03 TN3 PIC X(12) VALUE "CONSULTORIA ".
+  73            03 TN4 PIC X(12) VALUE "ASSESSORIA  ".
+  74    
+  75         01 TABAUX3 REDEFINES TABNIVEL.
+  76             03 TDNIVL       PIC X(12) OCCURS 10 TIMES.
+  77    
+  78         01 TABSITU.
+  79            03 TI1 PIC X(12) VALUE "ATIVO       ".
+  80            03 TI2 PIC X(12) VALUE "INATIVO     ".
+  81            03 TI3 PIC X(12) VALUE "CANCELADO   ".
+  82    
+  83         01 TABAUX4 REDEFINES TABSITU.
+  84             03 TDSITU        PIC X(12) OCCURS 10 TIMES.
+  85        *---------------------------------------------------------
+  86         SCREEN SECTION.
+  87         01  SP18202.
+  88             05  LINE 02  COLUMN 01
+  89                 VALUE  "                         CADASTRO DE CAR".
+  90             05  LINE 02  COLUMN 41
+  91                 VALUE  "GOS".
+  92             05  LINE 04  COLUMN 01
+  93                 VALUE  "           CODIGO".
+  94             05  LINE 06  COLUMN 01
+  95                 VALUE  "           DENOMINACAO".
+  96             05  LINE 08  COLUMN 01
+  97                 VALUE  "           TIPO SALARIO     -".
+  98             05  LINE 10  COLUMN 01
+  99                 VALUE  "           NIVEL            -".
+ 100             05  LINE 12  COLUMN 01
+ 101                 VALUE  "           SALARIO BASE".
+ 102             05  LINE 14  COLUMN 01
+ 103                 VALUE  "           TIPO RISCO       -".
+ 104             05  LINE 16  COLUMN 01
+ 105                 VALUE  "           SITUACAO         -".
+ 106             05  LINE 23  COLUMN 01
+ 107                 VALUE  "           MENSAGEM".
+ 108             05  TCOD
+ 109                 LINE 04  COLUMN 27  PIC 9(04)
+ 110                 USING  CAR-COD
+ 111                 HIGHLIGHT.
+ 112             05  TDENOM
+ 113                 LINE 06  COLUMN 27  PIC X(20)
+ 114                 USING  CAR-DENOM
+
+ SP18202.COB                             Fri Oct 05 10:50:11 2018    Page   3
+ line number source line   Microsoft COBOL                       Version 2.20
+
+ 115                 HIGHLIGHT.
+ 116             05  TTS
+ 117                 LINE 08  COLUMN 27  PIC 9(01)
+ 118                 USING  CAR-TS
+ 119                 HIGHLIGHT.
+ 120             05  TTSC
+ 121                 LINE 08  COLUMN 31  PIC X(12)
+ 122                 USING  CAR-TSC
+ 123                 HIGHLIGHT.
+ 124             05  TNIVEL
+ 125                 LINE 10  COLUMN 27  PIC 9(01)
+ 126                 USING  CAR-NIVEL
+ 127                 HIGHLIGHT.
+ 128             05  TNIVELC
+ 129                 LINE 10  COLUMN 31  PIC X(15)
+ 130                 USING  CAR-NIVELC
+ 131                 HIGHLIGHT.
+ 132             05  TSALB
+ 133                 LINE 12  COLUMN 27  PIC 9(06)
+ 134                 USING  CAR-SALB
+ 135                 HIGHLIGHT.
+ 136             05  TTRISC
+ 137                 LINE 14  COLUMN 27  PIC 9(01)
+ 138                 USING  CAR-TRISC
+ 139                 HIGHLIGHT.
+ 140             05  TTRISCC
+ 141                 LINE 14  COLUMN 31  PIC X(12)
+ 142                 USING  CAR-TRISCC
+ 143                 HIGHLIGHT.
+ 144             05  TSITU
+ 145                 LINE 16  COLUMN 27  PIC 9(01)
+ 146                 USING  CAR-TSITU
+ 147                 HIGHLIGHT.
+ 148             05  TSITUC
+ 149                 LINE 16  COLUMN 31  PIC X(12)
+ 150                 USING  CAR-TSITUC
+ 151                 HIGHLIGHT.
+ 152        *-----------------------------------------------------------------
+ 153         PROCEDURE DIVISION.
+ 154         INICIO.
+ 155        *
+ 156         INC-OP0.
+ 157             OPEN I-O CARGOS
+ 158             IF ST-ERRO NOT = "00"
+ 159                 IF ST-ERRO = "30"
+ 160                        OPEN OUTPUT CARGOS
+ 161                        MOVE "*** ARQUIVO CARGO SENDO CRIADO **" TO MENS
+ 162                        PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 163                        CLOSE CARGOS
+ 164                        GO TO INC-OP0
+ 165                     ELSE
+ 166                        MOVE "ERRO NA ABERTURA DO ARQUIVO CARGOS" TO MENS
+ 167                        PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 168                        GO TO ROT-FIM
+ 169                  ELSE
+ 170                      NEXT SENTENCE.
+ 171         INC-001.
+
+ SP18202.COB                             Fri Oct 05 10:50:11 2018    Page   4
+ line number source line   Microsoft COBOL                       Version 2.20
+
+ 172                  MOVE ZEROS  TO CAR-SALB CAR-NIVEL CAR-COD CAR-TSITU
+ 173                                 CAR-TRISC CAR-TS
+ 174    
+ 175                  MOVE SPACES TO CAR-NIVELC CAR-TSC
+ 176                                 CAR-DENOM CAR-TSITUC CAR-TRISCC
+ 177    
+ 178                  DISPLAY SP18202.
+ 179    
+ 180         INC-002.
+ 181                  ACCEPT TCOD
+ 182                  ACCEPT W-ACT FROM ESCAPE KEY
+ 183                   IF W-ACT = 02
+ 184                     CLOSE CARGOS
+ 185                     GO TO ROT-FIM.
+ 186                  IF CAR-COD = ZEROS
+ 187                     MOVE "*** COD INVALIDO ***" TO MENS
+ 188                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 189                     GO TO INC-002.
+ 190         LER-CARGOS.
+ 191                  MOVE 0 TO W-SEL
+ 192                  READ CARGOS
+ 193                  IF ST-ERRO NOT = "23"
+ 194                     IF ST-ERRO = "00"
+ 195                        DISPLAY SP18202
+ 196                        MOVE "*** CARGO JA CADASTRAD0 ***" TO MENS
+ 197                        PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 198                        MOVE 1 TO W-SEL
+ 199                        GO TO ACE-001
+ 200                     ELSE
+ 201                        MOVE "ERRO NA LEITURA ARQUIVO PRODUTO"   TO MENS
+ 202                        PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 203                        GO TO ROT-FIM
+ 204                  ELSE
+ 205                     NEXT SENTENCE.
+ 206         INC-003.
+ 207                  ACCEPT TDENOM
+ 208                  ACCEPT W-ACT FROM ESCAPE KEY
+ 209                  IF CAR-DENOM = SPACES
+ 210                       MOVE "****PREENCHA O DENOM DO CARGO****" TO MENS
+ 211                       PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 212                       GO TO INC-003
+ 213                  IF W-ACT = 02 GO TO INC-002.
+ 214         INC-004.
+ 215                  ACCEPT TTS
+ 216                  ACCEPT W-ACT FROM ESCAPE KEY
+ 217                  IF CAR-TS = SPACES
+ 218                      MOVE "****PREENCHA O TS DO CARGO****" TO MENS
+ 219                      PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 220                      GO TO INC-004
+ 221                                  ELSE
+ 222                                  IF CAR-TS = 'A'
+ 223                      MOVE "ALTO" TO CAR-TSC
+ 224                  ELSE IF CAR-TS = 'B'
+ 225                          MOVE "BAIXO" TO CAR-TSC
+ 226                      ELSE IF CAR-TS = 'M'
+ 227                          MOVE "MEDIO" TO CAR-TSC
+ 228                              ELSE IF CAR-TS = 'G'
+
+ SP18202.COB                             Fri Oct 05 10:50:11 2018    Page   5
+ line number source line   Microsoft COBOL                       Version 2.20
+
+ 229                              MOVE "GRAVE" TO CAR-TSC
+ 230                              ELSE
+ 231                              MOVE "***PREENCHA O TS INVALIDO***" TO MENS
+ 232                                  PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 233                                  GO TO INC-004
+ 234                  IF W-ACT = 02 GO TO INC-003.
+ 235         INC-005.
+ 236                  ACCEPT TNIVEL
+ 237                  ACCEPT W-ACT FROM ESCAPE KEY
+ 238                  IF CAR-NIVEL = ZEROS
+ 239                      MOVE "****PREENCHA O NIVEL DO CARGO****" TO MENS
+ 240                      PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 241                      GO TO INC-005
+ 242                  IF W-ACT = 02 GO TO INC-004.
+ 243         INC-006.
+ 244                  ACCEPT  TSALB
+ 245                  ACCEPT W-ACT FROM ESCAPE KEY
+ 246                  IF CAR-SALB = ZEROS
+ 247                      MOVE "****PREENCHA O SALB DO CARGO****" TO MENS
+ 248                      PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 249                      GO TO INC-006
+ 250                  IF W-ACT = 02 GO TO INC-005.
+ 251         INC-007.
+ 252                  ACCEPT TTRISC
+ 253                  ACCEPT W-ACT FROM ESCAPE KEY
+ 254                  IF CAR-TRISC = ZEROS
+ 255                      MOVE "****PREENCHA O TRISC DO CARGO****" TO MENS
+ 256                      PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 257                      GO TO INC-007
+ 258                  IF W-ACT = 02 GO TO INC-006.
+ 259         INC-008.
+ 260                  ACCEPT TSITU
+ 261                  ACCEPT W-ACT FROM ESCAPE KEY
+ 262                  IF CAR-TSITU = SPACES
+ 263                      MOVE "****PREENCHA O TSITU DO CARGO****" TO MENS
+ 264                      PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 265                      GO TO INC-008
+ 266                  IF W-ACT = 02 GO TO INC-007.
+ 267    
+ 268        *
+ 269                  IF W-SEL = 1
+ 270                                GO TO ALT-OPC.
+ 271                  MOVE TDSALR(CAR-NIVEL)  TO CAR-NIVELC
+ 272                  DISPLAY SP18202.
+ 273    
+ 274                  MOVE TDNIVL(CAR-TRISC)  TO CAR-TRISCC
+ 275                  DISPLAY SP18202.
+ 276    
+ 277                  MOVE TDSITU(CAR-TSITU)  TO CAR-TSITUC
+ 278                  DISPLAY SP18202.
+ 279         INC-OPC.
+ 280                  MOVE "S" TO W-OPCAO
+ 281                  DISPLAY (24, 40) "DADOS OK (S/N) : ".
+ 282                  ACCEPT (24, 57) W-OPCAO WITH UPDATE
+ 283                  ACCEPT W-ACT FROM ESCAPE KEY
+ 284                  IF W-ACT = 02 GO TO INC-008.
+ 285                  IF W-OPCAO = "N" OR "n"
+
+ SP18202.COB                             Fri Oct 05 10:50:11 2018    Page   6
+ line number source line   Microsoft COBOL                       Version 2.20
+
+ 286                     MOVE "*** DADOS RECUSADOS PELO USUARIO ***" TO MENS
+ 287                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 288                     GO TO INC-001.
+ 289                  IF W-OPCAO NOT = "S" AND "s"
+ 290                     MOVE "*** DIGITE APENAS S=SIM e N=NAO ***" TO MENS
+ 291                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 292                     GO TO INC-OPC.
+ 293         INC-WR1.
+ 294                  WRITE REGCARGO
+ 295                  IF ST-ERRO = "00" OR "02"
+ 296                        MOVE "*** DADOS GRAVADOS *** " TO MENS
+ 297                        PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 298                        GO TO INC-001.
+ 299                  IF ST-ERRO = "22"
+ 300                        MOVE "*** CARGO JA EXISTE ***       " TO MENS
+ 301                        PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 302                        GO TO INC-001
+ 303                  ELSE
+ 304                        MOVE "ERRO NA GRAVACAO DO ARQUIVO DE CARGOS"
+ 305                                                         TO MENS
+ 306                        PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 307                        GO TO ROT-FIM.
+ 308        *
+ 309        *****************************************
+ 310        * ROTINA DE CONSULTA/ALTERACAO/EXCLUSAO *
+ 311        *****************************************
+ 312        *
+ 313         ACE-001.
+ 314                  DISPLAY (24, 12)
+ 315                       "F1=NOVO REGISTRO   F2=ALTERAR   F3=EXCLUIR"
+ 316                  ACCEPT (24, 55) W-OPCAO
+ 317                  ACCEPT W-ACT FROM ESCAPE KEY
+ 318                  IF W-ACT NOT = 02 AND W-ACT NOT = 03 AND W-ACT NOT = 04
+ 319                     GO TO ACE-001.
+ 320                  MOVE SPACES TO MENS
+ 321                  DISPLAY (24, 12) MENS
+ 322                  IF W-ACT = 02
+ 323                     MOVE 02 TO W-SEL
+ 324                     GO TO INC-001.
+ 325                  IF W-ACT = 03
+ 326                     GO TO INC-003.
+ 327        *
+ 328         EXC-OPC.
+ 329                  DISPLAY (24, 40) "EXCLUIR   (S/N) : ".
+ 330                  ACCEPT (24, 57) W-OPCAO
+ 331                  IF W-OPCAO = "N" OR "n"
+ 332                     MOVE "*** REGISTRO NAO EXCLUIDO ***" TO MENS
+ 333                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 334                     GO TO INC-001.
+ 335                  IF W-OPCAO NOT = "S" AND "s"
+ 336                     MOVE "*** DIGITE APENAS S=SIM  e  N=NAO ***" TO MENS
+ 337                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 338                     GO TO EXC-OPC.
+ 339         EXC-DL1.
+ 340                  DELETE CARGOS RECORD
+ 341                  IF ST-ERRO = "00"
+ 342                     MOVE "*** REGISTRO EXCLUIDO ***           " TO MENS
+
+ SP18202.COB                             Fri Oct 05 10:50:11 2018    Page   7
+ line number source line   Microsoft COBOL                       Version 2.20
+
+ 343                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 344                     GO TO INC-001.
+ 345                  MOVE "ERRO NA EXCLUSAO DO REGISTRO "   TO MENS
+ 346                  PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 347                  GO TO ROT-FIM.
+ 348        *
+ 349         ALT-OPC.
+ 350                  DISPLAY (24, 40) "ALTERAR  (S/N) : ".
+ 351                  ACCEPT (24, 57) W-OPCAO
+ 352                  ACCEPT W-ACT FROM ESCAPE KEY
+ 353                  IF W-ACT = 02 GO TO INC-005.
+ 354                  IF W-OPCAO = "N" OR "n"
+ 355                     MOVE "*** INFORMACOES NAO ALTERADAS *** " TO MENS
+ 356                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 357                     GO TO INC-001.
+ 358                  IF W-OPCAO NOT = "S" AND "s"
+ 359                     MOVE "*** DIGITE APENAS S=SIM  e  N=NAO ***" TO MENS
+ 360                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 361                     GO TO ALT-OPC.
+ 362         ALT-RW1.
+ 363                  REWRITE REGCARGO
+ 364                  IF ST-ERRO = "00" OR "02"
+ 365                     MOVE "*** REGISTRO ALTERADO ***         " TO MENS
+ 366                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 367                     GO TO INC-001.
+ 368                  MOVE "ERRO NA EXCLUSAO DO REGISTRO PRODUTO"   TO MENS
+ 369                  PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 370                  GO TO ROT-FIM.
+ 371        *
+ 372        **********************
+ 373        * ROTINA DE FIM      *
+ 374        **********************
+ 375        *
+ 376         ROT-FIM.
+ 377                  DISPLAY (01, 01) ERASE
+ 378                  EXIT PROGRAM.
+ 379         ROT-FIMP.
+ 380                  EXIT PROGRAM.
+ 381    
+ 382         ROT-FIMS.
+ 383                  STOP RUN.
+ 384        *
+ 385        **********************
+ 386        * ROTINA DE MENSAGEM *
+ 387        **********************
+ 388        *
+ 389         ROT-MENS.
+ 390                  MOVE ZEROS TO W-CONT.
+ 391         ROT-MENS1.
+ 392                 DISPLAY (24, 12) MENS.
+ 393         ROT-MENS2.
+ 394                  ADD 1 TO W-CONT
+ 395                  IF W-CONT < 1000
+ 396                     GO TO ROT-MENS2
+ 397                  ELSE
+ 398                     DISPLAY (24, 12) LIMPA.
+ 399         ROT-MENS-FIM.
+
+ SP18202.COB                             Fri Oct 05 10:50:11 2018    Page   8
+ line number source line   Microsoft COBOL                       Version 2.20
+
+ 400                  EXIT.
+ 401         ROT-ALFA-FIM.
+
+   No errors or warnings
+
+   Data area size =  2280
+   Code area size =  2836
+
