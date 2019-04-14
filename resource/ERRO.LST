@@ -1,0 +1,510 @@
+
+ PROG002.COB                             Thu Sep 20 16:35:14 2018    Page   1
+ line number source line   Microsoft COBOL                       Version 2.20
+
+   1         IDENTIFICATION DIVISION.
+   2         PROGRAM-ID. PROG001.
+   3         AUTHOR. JษSSICA SILVA CARMO.
+   4        **************************************
+   5        * MANUTENCAO DO CADASTRO DE AMIGOS   *
+   6        **************************************
+   7        *----------------------------------------------------------------
+   8         ENVIRONMENT DIVISION.
+   9         CONFIGURATION SECTION.
+  10         SPECIAL-NAMES.
+  11                       DECIMAL-POINT IS COMMA.
+  12         INPUT-OUTPUT SECTION.
+  13         FILE-CONTROL.
+  14         SELECT AMIGOS ASSIGN TO DISK
+  15                      ORGANIZATION IS INDEXED
+  16                      ACCESS MODE  IS DYNAMIC
+  17                      RECORD KEY   IS APELIDO
+  18                      FILE STATUS  IS ST-ERRO
+  19                      ALTERNATE RECORD KEY IS NOME
+  20                                     WITH DUPLICATES.
+  21        *
+  22        *-----------------------------------------------------------------
+  23         DATA DIVISION.
+  24         FILE SECTION.
+  25         FD AMIGOS
+  26                 LABEL RECORD IS STANDARD
+  27                 VALUE OF FILE-ID IS "CADAMIGO.DAT".
+  28         01 REGAMI.
+  29                  03 APELIDO    PIC X(15).
+  30                  03 NOME       PIC X(30).
+  31                  03 LOGRADOURO PIC X(35).
+  32                  03 BAIRRO     PIC X(20).
+  33                  03 CIDADE     PIC X(20).
+  34                  03 UF         PIC X(02).
+  35                  03 EMAIL      PIC X(30).
+  36                  03 TELEFONE.
+  37                     05 DDD     PIC 9(03).
+  38                     05 NUMERO  PIC 9(09).
+  39                  03 DATANASC.
+  40                     05 DIANASC PIC 9(02).
+  41                     05 MESNASC PIC 9(02).
+  42                     05 ANONASC PIC 9(04).
+  43                  03 SEXO       PIC X(01).
+  44                  03 GENERO     PIC X(01).
+  45                  03 TIPOAMIGO  PIC 9(01).
+  46    
+  47        *-----------------------------------------------------------------
+  48         WORKING-STORAGE SECTION.
+  49         77 W-SEL        PIC 9(01) VALUE ZEROS.
+  50         77 W-CONT       PIC 9(06) VALUE ZEROS.
+  51         77 W-OPCAO      PIC X(01) VALUE SPACES.
+  52         77 ST-ERRO      PIC X(02) VALUE "00".
+  53         77 W-ACT        PIC 9(02) VALUE ZEROS.
+  54         77 MENS         PIC X(50) VALUE SPACES.
+  55         77 LIMPA        PIC X(50) VALUE SPACES.
+  56         01 TEXTOSEXO    PIC X(10) VALUE SPACES.
+  57         01 TEXTOGENERO  PIC X(15) VALUE SPACES.
+
+ PROG002.COB                             Thu Sep 20 16:35:14 2018    Page   2
+ line number source line   Microsoft COBOL                       Version 2.20
+
+  58         01 TEXTOTAMIGO  PIC X(15) VALUE SPACES.
+  59        *-----------------------------------------------------------------
+  60         SCREEN SECTION.
+  61         01  TELA2.
+  62             05  BLANK SCREEN.
+  63             05  LINE 01  COLUMN 01
+  64                 VALUE  "ษอออออออออออออออออออออออออออออออออออออออ".
+  65             05  LINE 01  COLUMN 41
+  66                 VALUE  "อออออออออออออออออออออออออออออออออออออออป".
+  67             05  LINE 02  COLUMN 01
+  68                 VALUE  "บ                         *** CADASTRO D".
+  69             05  LINE 02  COLUMN 41
+  70                 VALUE  "E AMIGOS ***                           บ".
+  71             05  LINE 03  COLUMN 01
+  72                 VALUE  "บฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ".
+  73             05  LINE 03  COLUMN 41
+  74                 VALUE  "ฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤบ".
+  75             05  LINE 04  COLUMN 01
+  76                 VALUE  "บฺฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฟ".
+  77             05  LINE 04  COLUMN 41
+  78                 VALUE  "                                       บ".
+  79             05  LINE 05  COLUMN 01
+  80                 VALUE  "บณ APELIDO                     ณ  NOME".
+  81             05  LINE 05  COLUMN 41
+  82                 VALUE  "                                       บ".
+  83             05  LINE 06  COLUMN 01
+  84                 VALUE  "บภฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤู".
+  85             05  LINE 06  COLUMN 41
+  86                 VALUE  "                                       บ".
+  87             05  LINE 07  COLUMN 01
+  88                 VALUE  "บ  LOGRADOURO".
+  89             05  LINE 07  COLUMN 41
+  90                 VALUE  "          BAIRRO                       บ".
+  91             05  LINE 08  COLUMN 01
+  92                 VALUE  "บ".
+  93             05  LINE 08  COLUMN 41
+  94                 VALUE  "                                       บ".
+  95             05  LINE 09  COLUMN 01
+  96                 VALUE  "บ  CIDADE                      UF     EM".
+  97             05  LINE 09  COLUMN 41
+  98                 VALUE  "AIL                                    บ".
+  99             05  LINE 10  COLUMN 01
+ 100                 VALUE  "บ".
+ 101             05  LINE 10  COLUMN 41
+ 102                 VALUE  "                                       บ".
+ 103             05  LINE 11  COLUMN 01
+ 104                 VALUE  "บ  TELEFONE (   )                     DA".
+ 105             05  LINE 11  COLUMN 41
+ 106                 VALUE  "TA NASCIMENTO                          บ".
+ 107             05  LINE 12  COLUMN 01
+ 108                 VALUE  "บ".
+ 109             05  LINE 12  COLUMN 41
+ 110                 VALUE  "                                       บ".
+ 111             05  LINE 13  COLUMN 01
+ 112                 VALUE  "บ".
+ 113             05  LINE 13  COLUMN 41
+ 114                 VALUE  "                                       บ".
+
+ PROG002.COB                             Thu Sep 20 16:35:14 2018    Page   3
+ line number source line   Microsoft COBOL                       Version 2.20
+
+ 115             05  LINE 14  COLUMN 01
+ 116                 VALUE  "บ".
+ 117             05  LINE 14  COLUMN 41
+ 118                 VALUE  "                                       บ".
+ 119             05  LINE 15  COLUMN 01
+ 120                 VALUE  "บ  SEXO                 GENERO".
+ 121             05  LINE 15  COLUMN 41
+ 122                 VALUE  "         TIPO AMIGO                    บ".
+ 123             05  LINE 16  COLUMN 01
+ 124                 VALUE  "บ".
+ 125             05  LINE 16  COLUMN 41
+ 126                 VALUE  "                                       บ".
+ 127             05  LINE 17  COLUMN 01
+ 128                 VALUE  "บ".
+ 129             05  LINE 17  COLUMN 41
+ 130                 VALUE  "                                       บ".
+ 131             05  LINE 18  COLUMN 01
+ 132                 VALUE  "บ".
+ 133             05  LINE 18  COLUMN 41
+ 134                 VALUE  "                                       บ".
+ 135             05  LINE 19  COLUMN 01
+ 136                 VALUE  "บ".
+ 137             05  LINE 19  COLUMN 41
+ 138                 VALUE  "                                       บ".
+ 139             05  LINE 20  COLUMN 01
+ 140                 VALUE  "บ".
+ 141             05  LINE 20  COLUMN 41
+ 142                 VALUE  "                                       บ".
+ 143             05  LINE 21  COLUMN 01
+ 144                 VALUE  "บ".
+ 145             05  LINE 21  COLUMN 41
+ 146                 VALUE  "                                       บ".
+ 147             05  LINE 22  COLUMN 01
+ 148                 VALUE  "บ".
+ 149             05  LINE 22  COLUMN 41
+ 150                 VALUE  "                                       บ".
+ 151             05  LINE 23  COLUMN 01
+ 152                 VALUE  "บMENSAGEM :".
+ 153             05  LINE 23  COLUMN 41
+ 154                 VALUE  "                                       บ".
+ 155             05  LINE 24  COLUMN 01
+ 156                 VALUE  "ศอออออออออออออออออออออออออออออออออออออออ".
+ 157             05  LINE 24  COLUMN 41
+ 158                 VALUE  "อออออออออออออออออออออออออออออออออออออออผ".
+ 159             05  TAPELIDO
+ 160                 LINE 05  COLUMN 12  PIC X(15)
+ 161                 USING  APELIDO
+ 162                 HIGHLIGHT.
+ 163             05  TNOME
+ 164                 LINE 05  COLUMN 40  PIC X(30)
+ 165                 USING  NOME
+ 166                 HIGHLIGHT.
+ 167             05  TLOGRADOURO
+ 168                 LINE 07  COLUMN 15  PIC X(35)
+ 169                 USING  LOGRADOURO
+ 170                 HIGHLIGHT.
+ 171             05  TBAIRRO
+
+ PROG002.COB                             Thu Sep 20 16:35:14 2018    Page   4
+ line number source line   Microsoft COBOL                       Version 2.20
+
+ 172                 LINE 07  COLUMN 58  PIC X(20)
+ 173                 USING  BAIRRO
+ 174                 HIGHLIGHT.
+ 175             05  TCIDADE
+ 176                 LINE 09  COLUMN 11  PIC X(20)
+ 177                 USING  CIDADE
+ 178                 HIGHLIGHT.
+ 179             05  TUF
+ 180                 LINE 09  COLUMN 35  PIC X(02)
+ 181                 USING  UF
+ 182                 HIGHLIGHT.
+ 183             05  TEMAIL
+ 184                 LINE 09  COLUMN 45  PIC X(35)
+ 185                 USING  EMAIL
+ 186                 HIGHLIGHT.
+ 187             05  TDDD
+ 188                 LINE 11  COLUMN 14  PIC 999
+ 189                 USING  DDD
+ 190                 HIGHLIGHT.
+ 191             05  TNUMERO
+ 192                 LINE 11  COLUMN 19  PIC Z9999.9999
+ 193                 USING  NUMERO
+ 194                 HIGHLIGHT.
+ 195             05  TDATANASC
+ 196                 LINE 11  COLUMN 55  PIC XX/XX/XXXX
+ 197                 USING  DATANASC
+ 198                 HIGHLIGHT.
+ 199             05  TSEXO
+ 200                 LINE 15  COLUMN 09  PIC X(01)
+ 201                 USING  SEXO
+ 202                 HIGHLIGHT.
+ 203             05  TEXSEXO
+ 204                 LINE 15  COLUMN 11  PIC X(10)
+ 205                 USING  TEXTOSEXO
+ 206                 HIGHLIGHT.
+ 207             05  TGENERO
+ 208                 LINE 15  COLUMN 32  PIC X(01)
+ 209                 USING  GENERO
+ 210                 HIGHLIGHT.
+ 211             05  TEXGENERO
+ 212                 LINE 15  COLUMN 34  PIC X(15)
+ 213                 USING  TEXTOGENERO
+ 214                 HIGHLIGHT.
+ 215             05  TAMIGO
+ 216                 LINE 15  COLUMN 61  PIC 9(01)
+ 217                 USING  TIPOAMIGO
+ 218                 HIGHLIGHT.
+ 219             05  TEXTAMIGO
+ 220                 LINE 15  COLUMN 63  PIC X(15)
+ 221                 USING  TEXTOTAMIGO
+ 222                 HIGHLIGHT.
+ 223        *-----------------------------------------------------------------
+ 224         PROCEDURE DIVISION.
+ 225         INICIO.
+ 226        *
+ 227         INC-OP0.
+ 228             OPEN I-O AMIGOS
+
+ PROG002.COB                             Thu Sep 20 16:35:14 2018    Page   5
+ line number source line   Microsoft COBOL                       Version 2.20
+
+ 229             IF ST-ERRO NOT = "00"
+ 230                 IF ST-ERRO = "30"
+ 231                        OPEN OUTPUT AMIGOS
+ 232                        CLOSE AMIGOS
+ 233                        MOVE "* ARQUIVO AMIGOS SENDO CRIADO *" TO MENS
+ 234                        PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 235                        GO TO INC-OP0
+ 236                 ELSE
+ 237                        MOVE "ERRO NA ABERTURA DO ARQUIVO PRODTUO" TO MENS
+ 238                        PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 239                        GO TO ROT-FIM
+ 240             ELSE
+ 241                      NEXT SENTENCE.
+ 242         INC-001.
+ 243                  MOVE SPACES TO APELIDO NOME EMAIL LOGRADOURO
+ 244                                 BAIRRO CIDADE UF SEXO GENERO
+ 245                                 TEXTOSEXO TEXTOGENERO TEXTOTAMIGO
+ 246                  MOVE ZEROS  TO DDD NUMERO TIPOAMIGO.
+ 247    
+ 248                  DISPLAY TELA2.
+ 249          INC-002.
+ 250                  ACCEPT TAPELIDO
+ 251                  ACCEPT W-ACT FROM ESCAPE KEY
+ 252                  IF W-ACT = 02
+ 253                     CLOSE AMIGOS
+ 254                     GO TO ROT-FIM.
+ 255                  IF APELIDO = SPACES
+ 256                     MOVE "*** APELIDO INVALIDO ***" TO MENS
+ 257                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 258                     GO TO INC-002.
+ 259         LER-PRODUTO01.
+ 260                  MOVE 0 TO W-SEL
+ 261                  READ AMIGOS
+ 262                  IF ST-ERRO NOT = "23"
+ 263                     IF ST-ERRO = "00"
+ 264                        DISPLAY TELA2
+ 265                        MOVE "*** AMIGO JA CADASTRAD0 ***" TO MENS
+ 266                        PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 267                        MOVE 1 TO W-SEL
+ 268                        GO TO ACE-001
+ 269                     ELSE
+ 270                        MOVE "ERRO NA LEITURA ARQ. PRODUTO"   TO MENS
+ 271                        PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 272                        GO TO ROT-FIM
+ 273                  ELSE
+ 274                     NEXT SENTENCE.
+ 275         INC-003.
+ 276                  ACCEPT TNOME
+ 277                  ACCEPT W-ACT FROM ESCAPE KEY
+ 278                  IF W-ACT = 02 GO TO INC-002.
+ 279                  IF NOME = SPACES
+ 280                     MOVE "NOME DEVE SER DIFERENTE BRANCOS" TO MENS
+ 281                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 282                     GO TO INC-003.
+ 283         INC-004.
+ 284                  ACCEPT TLOGRADOURO
+ 285                  ACCEPT W-ACT FROM ESCAPE KEY
+
+ PROG002.COB                             Thu Sep 20 16:35:14 2018    Page   6
+ line number source line   Microsoft COBOL                       Version 2.20
+
+ 286                  IF W-ACT = 02 GO TO INC-003.
+ 287                  IF EMAIL = SPACES
+ 288                     MOVE "LOGRADOURO DEVE SER DIFERENTE BRANCOS" TO MENS
+ 289                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 290                     GO TO INC-004.
+ 291         INC-005.
+ 292                  ACCEPT TBAIRRO
+ 293                  ACCEPT W-ACT FROM ESCAPE KEY
+ 294                  IF W-ACT = 02 GO TO INC-004.
+ 295         INC-006.
+ 296                  ACCEPT TCIDADE
+ 297                  ACCEPT W-ACT FROM ESCAPE KEY
+ 298                  IF W-ACT = 02 GO TO INC-005.
+ 299         INC-007.
+ 300                  ACCEPT TUF
+ 301                  ACCEPT W-ACT FROM ESCAPE KEY
+ 302                  IF W-ACT = 02 GO TO INC-006.
+ 303         INC-008.
+ 304                  ACCEPT TEMAIL
+ 305                  ACCEPT W-ACT FROM ESCAPE KEY
+ 306                  IF W-ACT = 02 GO TO INC-007.
+ 307         INC-009.
+ 308                  ACCEPT TDDD
+ 309                  ACCEPT W-ACT FROM ESCAPE KEY
+ 310                  IF W-ACT = 02 GO TO INC-008.
+ 311         INC-010.
+ 312                  ACCEPT TNUMERO
+ 313                  ACCEPT W-ACT FROM ESCAPE KEY
+ 314                  IF W-ACT = 02 GO TO INC-009.
+ 315         INC-011.
+ 316                  ACCEPT TDATANASC
+ 317                  ACCEPT W-ACT FROM ESCAPE KEY
+ 318                  IF W-ACT = 02 GO TO INC-019.
+ 319         INC-012.
+ 320                  ACCEPT TSEXO
+ 321                  ACCEPT W-ACT FROM ESCAPE KEY
+ 322                  IF W-ACT = 02 GO TO INC-011.
+ 323                  IF SEXO NOT = "M" AND "F"
+ 324                     MOVE "SEXO VALIDO = M OU F" TO MENS
+ 325                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 326                     GO TO INC-012
+ 327                  ELSE
+ 328                     IF SEXO = "M"
+ 329                        MOVE "MASCULINO" TO TEXTOSEXO
+ 330                     ELSE
+ 331                        MOVE "FEMENINO"  TO TEXTOSEXO.
+ 332         INC-013.
+ 333                  ACCEPT TGENERO
+ 334                  ACCEPT W-ACT FROM ESCAPE KEY
+ 335                  IF W-ACT = 02 GO TO INC-012.
+ 336         INC-014.
+ 337                  ACCEPT TTIPOAMIGO
+ 338                  ACCEPT W-ACT FROM ESCAPE KEY
+ 339                  IF W-ACT = 02 GO TO INC-013.
+ 340        *
+ 341                  IF W-SEL = 1
+ 342                                GO TO ALT-OPC.
+
+ PROG002.COB                             Thu Sep 20 16:35:14 2018    Page   7
+ line number source line   Microsoft COBOL                       Version 2.20
+
+ 343    
+ 344         INC-OPC.
+ 345                  MOVE "S" TO W-OPCAO
+ 346                  DISPLAY (23, 40) "DADOS OK (S/N) : ".
+ 347                  ACCEPT (23, 57) W-OPCAO WITH UPDATE
+ 348                  ACCEPT W-ACT FROM ESCAPE KEY
+ 349                  IF W-ACT = 02 GO TO INC-004.
+ 350                  IF W-OPCAO = "N" OR "n"
+ 351                     MOVE "* DADOS RECUSADOS PELO OPERADOR *" TO MENS
+ 352                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 353                     GO TO INC-001.
+ 354                  IF W-OPCAO NOT = "S" AND "s"
+ 355                     MOVE "*** DIGITE APENAS S=SIM e N=NAO ***" TO MENS
+ 356                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 357                     GO TO INC-OPC.
+ 358         INC-WR1.
+ 359                  WRITE REGAMI
+ 360                  IF ST-ERRO = "00" OR "02"
+ 361                        MOVE "*** DADOS GRAVADOS *** " TO MENS
+ 362                        PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 363                        GO TO INC-001.
+ 364                  IF ST-ERRO = "22"
+ 365                        MOVE "*** AMIGO JA EXISTE ***       " TO MENS
+ 366                        PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 367                        GO TO INC-001
+ 368                  ELSE
+ 369                        MOVE "ERRO NA GRAVACAO DO ARQUIVO DE AMIGOS"
+ 370                                                         TO MENS
+ 371                        PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 372                        GO TO ROT-FIM.
+ 373        *
+ 374        *****************************************
+ 375        * ROTINA DE CONSULTA/ALTERACAO/EXCLUSAO *
+ 376        *****************************************
+ 377        *
+ 378         ACE-001.
+ 379                  DISPLAY (23, 12)
+ 380                       "F1=NOVO REGISTRO   F2=ALTERAR   F3=EXCLUIR"
+ 381                  ACCEPT (23, 55) W-OPCAO
+ 382                  ACCEPT W-ACT FROM ESCAPE KEY
+ 383                  IF W-ACT NOT = 02 AND W-ACT NOT = 03 AND W-ACT NOT = 04
+ 384                     GO TO ACE-001.
+ 385                  MOVE SPACES TO MENS
+ 386                  DISPLAY (23, 12) MENS
+ 387                  IF W-ACT = 02
+ 388                     MOVE 02 TO W-SEL
+ 389                     GO TO INC-001.
+ 390                  IF W-ACT = 03
+ 391                     GO TO INC-003.
+ 392        *
+ 393         EXC-OPC.
+ 394                  DISPLAY (23, 40) "EXCLUIR   (S/N) : ".
+ 395                  ACCEPT (23, 57) W-OPCAO
+ 396                  IF W-OPCAO = "N" OR "n"
+ 397                     MOVE "*** REGISTRO NAO EXCLUIDO ***" TO MENS
+ 398                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 399                     GO TO INC-001.
+
+ PROG002.COB                             Thu Sep 20 16:35:14 2018    Page   8
+ line number source line   Microsoft COBOL                       Version 2.20
+
+ 400                  IF W-OPCAO NOT = "S" AND "s"
+ 401                     MOVE "* DIGITE APENAS S=SIM  e  N=NAO *" TO MENS
+ 402                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 403                     GO TO EXC-OPC.
+ 404         EXC-DL1.
+ 405                  DELETE AMIGOS RECORD
+ 406                  IF ST-ERRO = "00"
+ 407                     MOVE "*** REGISTRO EXCLUIDO ***        " TO MENS
+ 408                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 409                     GO TO INC-001.
+ 410                  MOVE "ERRO NA EXCLUSAO DO REGISTRO "   TO MENS
+ 411                  PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 412                  GO TO ROT-FIM.
+ 413        *
+ 414         ALT-OPC.
+ 415                  DISPLAY (23, 40) "ALTERAR  (S/N) : ".
+ 416                  ACCEPT (23, 57) W-OPCAO
+ 417                  ACCEPT W-ACT FROM ESCAPE KEY
+ 418                  IF W-ACT = 02 GO TO INC-004.
+ 419                  IF W-OPCAO = "N" OR "n"
+ 420                     MOVE "*** INFORMACOES NAO ALTERADAS *** " TO MENS
+ 421                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 422                     GO TO INC-001.
+ 423                  IF W-OPCAO NOT = "S" AND "s"
+ 424                     MOVE "* DIGITE APENAS S=SIM  e  N=NAO *" TO MENS
+ 425                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 426                     GO TO ALT-OPC.
+ 427         ALT-RW1.
+ 428                  REWRITE REGAMI
+ 429                  IF ST-ERRO = "00" OR "02"
+ 430                     MOVE "*** REGISTRO ALTERADO ***         " TO MENS
+ 431                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 432                     GO TO INC-001.
+ 433                  MOVE "ERRO NA ALTERACAO DO REGISTRO AMIGOS"   TO MENS
+ 434                  PERFORM ROT-MENS THRU ROT-MENS-FIM
+ 435                  GO TO ROT-FIM.
+ 436        *
+ 437        **********************
+ 438        * ROTINA DE FIM      *
+ 439        **********************
+ 440        *
+ 441         ROT-FIM.
+ 442                  DISPLAY (01, 01) ERASE
+ 443                  EXIT PROGRAM.
+ 444         ROT-FIMP.
+ 445                  EXIT PROGRAM.
+ 446    
+ 447         ROT-FIMS.
+ 448                  STOP RUN.
+ 449        *
+ 450        **********************
+ 451        * ROTINA DE MENSAGEM *
+ 452        **********************
+ 453        *
+ 454         ROT-MENS.
+ 455                  MOVE ZEROS TO W-CONT.
+ 456         ROT-MENS1.
+
+ PROG002.COB                             Thu Sep 20 16:35:14 2018    Page   9
+ line number source line   Microsoft COBOL                       Version 2.20
+
+ 457                 DISPLAY (23, 12) MENS.
+ 458         ROT-MENS2.
+ 459                  ADD 1 TO W-CONT
+ 460                  IF W-CONT < 3000
+ 461                     GO TO ROT-MENS2
+ 462                  ELSE
+ 463                     DISPLAY (23, 12) LIMPA.
+ 464         ROT-MENS-FIM.
+ 465                  EXIT.
+ 466         FIM-ROT-TEMPO.
+0318:Procedure-name is unresolvable. INC-019 
+0337:Statement deleted due to erroneous syntax. TTIPOAMIGO
+
+    2 errors or warnings
+
+   Data area size =  1866
+   Code area size =  4286
+
