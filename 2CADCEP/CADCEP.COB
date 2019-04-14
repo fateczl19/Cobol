@@ -14,9 +14,9 @@
        SELECT CADCEP ASSIGN TO DISK
                     ORGANIZATION IS INDEXED
                     ACCESS MODE  IS DYNAMIC
-                    RECORD KEY   IS CEP-COD
+                    RECORD KEY   IS CEP
                     FILE STATUS  IS ST-ERRO
-                    ALTERNATE RECORD KEY IS CEP-LOG
+                    ALTERNATE RECORD KEY IS LOGRAD
                                             WITH DUPLICATES.
       *
       *-----------------------------------------------------------------
@@ -26,16 +26,16 @@
                LABEL RECORD IS STANDARD
                VALUE OF FILE-ID IS "CADCEP.DAT".
        01 REGCEP.
-                03 CEP-COD          PIC 99999999.
-                03 CEP-LOG          PIC X(35).
-                03 CEP-BAIR         PIC X(20).
-                03 CEP-CDD          PIC X(12).
-                03 CEP-UF           PIC X(02).
-                03 CEP-UFCDD        PIC X(20).
-                03 CEP-LONG         PIC X(12).
-                03 CEP-LATI         PIC X(12).
-                03 CEP-CODRC        PIC 9(01).
-                03 CEP-RC           PIC X(12).
+                03 CEP             PIC 9(08).
+                03 LOGRAD          PIC X(35).
+                03 BAIRRO          PIC X(20).
+                03 CIDADE          PIC X(12).
+                03 UF              PIC X(02).
+                03 DSCUF           PIC X(20).
+                03 LONGITU         PIC X(12).
+                03 LATITU          PIC X(12).
+                03 REGIAO-CDD      PIC 9(01).
+                03 DSC-REGIAOCDD   PIC X(12).
       *
       *-----------------------------------------------------------------
        WORKING-STORAGE SECTION.
@@ -47,15 +47,19 @@
        77 MENS         PIC X(50) VALUE SPACES.
        77 LIMPA        PIC X(50) VALUE SPACES.
       *
-       01 TABCEP.
-          03 TN1 PIC X(48) VALUE
-          "NORTE       NORDESTE    SUL         SUDOESTE  ".
-          03 TN2 PIC X(48) VALUE
-          "LESTE       OESTE       CENTRO      RURAL     ".
-          03 TN3 PIC X(12) VALUE "NAO INFORMDO".
+       01 TTABCEP.
+          03 TN1 PIC X(13) VALUE "NORTE        ".
+          03 TN2 PIC X(13) VALUE "NORDESTE     ".
+          03 TN3 PIC X(13) VALUE "SUL          ".
+          03 TN4 PIC X(13) VALUE "SUDOESTE     ".
+          03 TN5 PIC X(13) VALUE "LESTE        ".
+          03 TN6 PIC X(13) VALUE "OESTE        ".
+          03 TN7 PIC X(13) VALUE "CENTRO       ".
+          03 TN8 PIC X(13) VALUE "RURAL        ".
+          03 TN9 PIC X(13) VALUE "NAO INFORMADO".
 
-       01 TABAUX1 REDEFINES TABCEP.
-           03 TDCEP       PIC X(12) OCCURS 10 TIMES.
+       01 TTAB REDEFINES TTABCEP.
+           03 TABCEP PIC X(13) OCCURS 9 TIMES.
       *---------------------------------------------------------
        SCREEN SECTION.
        01  TELACEP.
@@ -78,44 +82,44 @@
            05  LINE 18  COLUMN 01
                VALUE  "           REGIAO DA CIDADE     -".
            05  TCOD
-               LINE 04  COLUMN 31  PIC 99999999
-               USING  CEP-COD
+               LINE 04  COLUMN 31  PIC 9(08)
+               USING  CEP
                HIGHLIGHT.
            05  TLOG
                LINE 06  COLUMN 31  PIC X(35)
-               USING  CEP-LOG
+               USING  LOGRAD
                HIGHLIGHT.
            05  TBAIR
                LINE 08  COLUMN 31  PIC X(20)
-               USING  CEP-BAIR
+               USING  BAIRRO
                HIGHLIGHT.
            05  TCID
                LINE 10  COLUMN 31  PIC X(20)
-               USING  CEP-CDD
+               USING  CIDADE
                HIGHLIGHT.
            05  TUF
                LINE 12  COLUMN 31  PIC X(02)
-               USING  CEP-UF
+               USING  UF
                HIGHLIGHT.
            05  TUFC
                LINE 12  COLUMN 36  PIC X(20)
-               USING  CEP-UFCDD
+               USING  DSCUF
                HIGHLIGHT.
            05  TLONG
                LINE 14  COLUMN 31  PIC X(12)
-               USING  CEP-LONG
+               USING  LONGITU
                HIGHLIGHT.
            05  TLATI
                LINE 16  COLUMN 31  PIC X(12)
-               USING  CEP-LATI
+               USING  LATITU
                HIGHLIGHT.
            05  TCODRC
                LINE 18  COLUMN 31  PIC 9(01)
-               USING  CEP-CODRC
+               USING  REGIAO-CDD
                HIGHLIGHT.
            05  TRC
                LINE 18  COLUMN 35  PIC X(12)
-               USING  CEP-RC
+               USING  DSC-REGIAOCDD
                HIGHLIGHT.
       *-----------------------------------------------------------------
        PROCEDURE DIVISION.
@@ -126,7 +130,7 @@
            IF ST-ERRO NOT = "00"
                IF ST-ERRO = "30"
                       OPEN OUTPUT CADCEP
-                      MOVE "*** ARQUIVOCEP SENDO CRIADO **" TO MENS
+                      MOVE "*** ARQUIVOCEP SENDO CRIADO ***" TO MENS
                       PERFORM ROT-MENS THRU ROT-MENS-FIM
                       CLOSE CADCEP
                       GO TO INC-OP0
@@ -137,10 +141,10 @@
                 ELSE
                     NEXT SENTENCE.
        INC-001.
-                MOVE ZEROS  TO CEP-COD CEP-CODRC
+                MOVE ZEROS  TO CEP REGIAO-CDD
 
-                MOVE SPACES TO CEP-LOG CEP-BAIR CEP-CDD CEP-UF CEP-UFCDD
-                               CEP-LONG CEP-LATI CEP-RC
+                MOVE SPACES TO LOGRAD BAIRRO CIDADE UF DSCUF
+                               LONGITU LATITU DSC-REGIAOCDD
 
                 DISPLAY TELACEP.
 
@@ -150,7 +154,7 @@
                  IF W-ACT = 02
                    CLOSE CADCEP
                    GO TO ROT-FIM.
-                IF CEP-COD = ZEROS
+                IF CEP = ZEROS
                    MOVE "*** COD INVALIDO ***" TO MENS
                    PERFORM ROT-MENS THRU ROT-MENS-FIM
                    GO TO INC-002.
@@ -159,143 +163,145 @@
                 READ CADCEP
                 IF ST-ERRO NOT = "23"
                    IF ST-ERRO = "00"
+                      MOVE 1 TO W-SEL
                       DISPLAY TELACEP
                       MOVE "***CEP JA CADASTRADO***" TO MENS
                       PERFORM ROT-MENS THRU ROT-MENS-FIM
-                      MOVE 1 TO W-SEL
                       GO TO ACE-001
                    ELSE
-                      MOVE "ERRO NA LEITURA ARQUIVO PRODUTO"   TO MENS
+                      MOVE "ERRO NA LEITURA ARQUIVO PRODUTO" TO MENS
                       PERFORM ROT-MENS THRU ROT-MENS-FIM
                       GO TO ROT-FIM
                 ELSE
                    NEXT SENTENCE.
+                
        INC-003.
                 ACCEPT TLOG
                 ACCEPT W-ACT FROM ESCAPE KEY
-                IF CEP-LOG = SPACES
-                     MOVE "****PREENCHA O DENOM DOCEP****" TO MENS
-                     PERFORM ROT-MENS THRU ROT-MENS-FIM
-                     GO TO INC-003.
                 IF W-ACT = 02
                     GO TO INC-001.
+                IF LOGRAD = SPACES
+                     MOVE "** PREENCHA O LOGRADOURO **" TO MENS
+                     PERFORM ROT-MENS THRU ROT-MENS-FIM
+                     GO TO INC-003.
        INC-004.
                 ACCEPT TBAIR
                 ACCEPT W-ACT FROM ESCAPE KEY
-                IF CEP-BAIR = SPACES
-                    MOVE "****PREENCHA O BAIRRO****" TO MENS
-                    PERFORM ROT-MENS THRU ROT-MENS-FIM
-                    GO TO INC-004.
                 IF W-ACT = 02
                     GO TO INC-003.
+                IF BAIRRO = SPACES
+                    MOVE "** PREENCHA O BAIRRO **" TO MENS
+                    PERFORM ROT-MENS THRU ROT-MENS-FIM
+                    GO TO INC-004.
        INC-005.
                 ACCEPT TCID
                 ACCEPT W-ACT FROM ESCAPE KEY
-                IF CEP-CDD = ZEROS
-                    MOVE "****PREENCHA A CIDADE****" TO MENS
-                    PERFORM ROT-MENS THRU ROT-MENS-FIM
-                    GO TO INC-005.
                 IF W-ACT = 02
                     GO TO INC-004.
+                IF CIDADE = ZEROS
+                    MOVE "** PREENCHA A CIDADE **" TO MENS
+                    PERFORM ROT-MENS THRU ROT-MENS-FIM
+                    GO TO INC-005.
+
        INC-006.
                 ACCEPT  TUF
                 ACCEPT W-ACT FROM ESCAPE KEY
-                IF CEP-UF = SPACES
-                    MOVE "****PREENCHA O UF****" TO MENS
+                IF W-ACT = 02
+                    GO TO INC-005.
+                IF UF = SPACES
+                    MOVE "** PREENCHA O UF **" TO MENS
                     PERFORM ROT-MENS THRU ROT-MENS-FIM
                     GO TO INC-006
                 ELSE
-                    IF CEP-UF = 'AC'
-                        MOVE "ACRE" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'AL'
-                            MOVE "ALAGOAS" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'AM'
-                            MOVE "AMAZONAS" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'AP'
-                            MOVE "AMAPA" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'BA'
-                            MOVE "BAHIA" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'CE'
-                            MOVE "CEARA" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'DF'
-                            MOVE "DISTRITO FEDERAL" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'ES'
-                            MOVE "ESPIRITO SANTO" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'GO'
-                            MOVE "GOIAS" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'MA'
-                            MOVE "MARANHAO" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'MT'
-                            MOVE "MATO GROSSO" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'MS'
-                            MOVE "MATO GROSSO DO SUL" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'MG'
-                            MOVE "MINAS GERAIS" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'PA'
-                            MOVE "PARA" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'PB'
-                            MOVE "PARAIBA" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'PR'
-                            MOVE "PARANA" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'PE'
-                            MOVE "PERNAMBUCO" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'PI'
-                            MOVE "PIAUI" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'RJ'
-                            MOVE "RIO DE JANEIRO" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'RN'
-                            MOVE "RIO GRANDE DO NORTE" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'RS'
-                            MOVE "RIO GRANDE DO SUL" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'RO'
-                            MOVE "RONDONIA" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'RR'
-                            MOVE "RORAIMA" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'SC'
-                            MOVE "SANTA CATARINA" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'SP'
-                            MOVE "SAO PAULO" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'SE'
-                            MOVE "SERGIPE" TO CEP-UFCDD
-                    ELSE IF CEP-UF = 'TO'
-                            MOVE "TOCANTINS" TO CEP-UFCDD
+                    IF UF = 'AC'
+                        MOVE "ACRE" TO DSCUF
+                    ELSE IF UF = 'AL'
+                            MOVE "ALAGOAS" TO DSCUF
+                    ELSE IF UF = 'AM'
+                            MOVE "AMAZONAS" TO DSCUF
+                    ELSE IF UF = 'AP'
+                            MOVE "AMAPA" TO DSCUF
+                    ELSE IF UF = 'BA'
+                            MOVE "BAHIA" TO DSCUF
+                    ELSE IF UF = 'CE'
+                            MOVE "CEARA" TO DSCUF
+                    ELSE IF UF = 'DF'
+                            MOVE "DISTRITO FEDERAL" TO DSCUF
+                    ELSE IF UF = 'ES'
+                            MOVE "ESPIRITO SANTO" TO DSCUF
+                    ELSE IF UF = 'GO'
+                            MOVE "GOIAS" TO DSCUF
+                    ELSE IF UF = 'MA'
+                            MOVE "MARANHAO" TO DSCUF
+                    ELSE IF UF = 'MT'
+                            MOVE "MATO GROSSO" TO DSCUF
+                    ELSE IF UF = 'MS'
+                            MOVE "MATO GROSSO DO SUL" TO DSCUF
+                    ELSE IF UF = 'MG'
+                            MOVE "MINAS GERAIS" TO DSCUF
+                    ELSE IF UF = 'PA'
+                            MOVE "PARA" TO DSCUF
+                    ELSE IF UF = 'PB'
+                            MOVE "PARAIBA" TO DSCUF
+                    ELSE IF UF = 'PR'
+                            MOVE "PARANA" TO DSCUF
+                    ELSE IF UF = 'PE'
+                            MOVE "PERNAMBUCO" TO DSCUF
+                    ELSE IF UF = 'PI'
+                            MOVE "PIAUI" TO DSCUF
+                    ELSE IF UF = 'RJ'
+                            MOVE "RIO DE JANEIRO" TO DSCUF
+                    ELSE IF UF = 'RN'
+                            MOVE "RIO GRANDE DO NORTE" TO DSCUF
+                    ELSE IF UF = 'RS'
+                            MOVE "RIO GRANDE DO SUL" TO DSCUF
+                    ELSE IF UF = 'RO'
+                            MOVE "RONDONIA" TO DSCUF
+                    ELSE IF UF = 'RR'
+                            MOVE "RORAIMA" TO DSCUF
+                    ELSE IF UF = 'SC'
+                            MOVE "SANTA CATARINA" TO DSCUF
+                    ELSE IF UF = 'SP'
+                            MOVE "SAO PAULO" TO DSCUF
+                    ELSE IF UF = 'SE'
+                            MOVE "SERGIPE" TO DSCUF
+                    ELSE IF UF = 'TO'
+                            MOVE "TOCANTINS" TO DSCUF
                     ELSE
-                      MOVE "***UF INVALIDO***" TO MENS
+                      MOVE "** UF INVALIDO **" TO MENS
                       PERFORM ROT-MENS THRU ROT-MENS-FIM
                       GO TO INC-006.
-                IF W-ACT = 02
-                    GO TO INC-005.
                 DISPLAY TELACEP.
        INC-007.
                 ACCEPT TLONG
                 ACCEPT W-ACT FROM ESCAPE KEY
-                IF CEP-LONG = SPACES
+                IF W-ACT = 02
+                    GO TO INC-006.
+                IF LONGITU = SPACES
                     MOVE "*PREENCHA A LONG DO CEP*" TO MENS
                     PERFORM ROT-MENS THRU ROT-MENS-FIM
                     GO TO INC-007.
-                IF W-ACT = 02
-                    GO TO INC-006.
        INC-008.
                 ACCEPT TLATI
                 ACCEPT W-ACT FROM ESCAPE KEY
-                IF CEP-LATI = SPACES
+                IF W-ACT = 02
+                    GO TO INC-007.
+                IF LATITU = SPACES
                     MOVE "*PREENCHA A LATI DO CEP*" TO MENS
                     PERFORM ROT-MENS THRU ROT-MENS-FIM
                     GO TO INC-008.
-                IF W-ACT = 02
-                    GO TO INC-007.
        INC-009.
                 ACCEPT TCODRC
                 ACCEPT W-ACT FROM ESCAPE KEY
-                IF CEP-CODRC = ZEROS
-                    MOVE "*PREENCHA O COD REGIAO*" TO MENS
-                    PERFORM ROT-MENS THRU ROT-MENS-FIM
-                    GO TO INC-009.
                 IF W-ACT = 02
                     GO TO INC-008.
+                IF REGIAO-CDD = ZEROS
+                    MOVE "** PREENCHA O CODIGO DA REGIAO **" TO MENS
+                    PERFORM ROT-MENS THRU ROT-MENS-FIM
+                    GO TO INC-009.
+                MOVE TABCEP(REGIAO-CDD) TO DSC-REGIAOCDD
+                DISPLAY TELACEP.
                 IF W-SEL = 1
-                    MOVE TDCEP(CEP-CODRC) TO CEP-RC
-                    DISPLAY TELACEP.
                     GO TO ALT-OPC.
        INC-OPC.
                 MOVE "S" TO W-OPCAO
@@ -342,7 +348,6 @@
                 DISPLAY (24, 12) MENS
                 IF W-ACT = 02
                    MOVE 02 TO W-SEL
-                   DISPLAY (05, 23) "HERE"
                    GO TO INC-001.
                 IF W-ACT = 03
                    GO TO INC-003.
