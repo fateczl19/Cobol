@@ -246,13 +246,11 @@
            ACCEPT W-ACT FROM ESCAPE KEY
            IF ST-ERRO NOT = "23"
                IF ST-ERRO = "00"
+                   MOVE 1 TO W-SEL
                    MOVE FKCEP TO CEP
-                   READ CADCEP
-                   DISPLAY TELACLI
-                   DISPLAY (01, 01) "CEP: " CEP
+                   PERFORM READ-CADCEP
                    MOVE "* CLIENTE JA CADASTRADO *" TO MENS
                    PERFORM ROT-MENS THRU ROT-MENS-FIM
-                   MOVE 1 TO W-SEL
                    GO TO ACE-001
                ELSE
                    MOVE "* ERRO AO LER REGISTRO *" TO MENS
@@ -327,7 +325,7 @@
                PERFORM ROT-MENS THRU ROT-MENS-FIM
                GO TO ACC-CEP.
       * LEITURA DO CEP
-       READ-CEP.
+       READ-CADCEP.
            READ CADCEP
            IF ST-ERRO = "00"
                DISPLAY TELACLI
@@ -339,8 +337,9 @@
                    MOVE "* ERRO AO LER CADDEP *" TO MENS
                    PERFORM ROT-MENS THRU ROT-MENS-FIM
                    GO TO ROT-FIM.
-           MOVE CEP TO FKCEP.
-       READ-CEPFIM.
+           MOVE CEP TO FKCEP
+           IF W-SEL = 1
+               EXIT.
        ACC-NUM.
            ACCEPT TNUM
            ACCEPT W-ACT FROM ESCAPE KEY
@@ -408,7 +407,7 @@
            ACCEPT (24, 57) W-OPCAO WITH UPDATE
            ACCEPT W-ACT FROM ESCAPE KEY
            IF W-ACT = 02
-      *---------------------         GO TO INC-013.
+              GO TO ACC-SITUAC.
            IF W-OPCAO = "N" OR "n"
               MOVE "* DADOS RECUSADOS PELO USUARIO *" TO MENS
               PERFORM ROT-MENS THRU ROT-MENS-FIM
@@ -477,11 +476,11 @@
            ACCEPT (24, 57) W-OPCAO
            ACCEPT W-ACT FROM ESCAPE KEY
            IF W-ACT = 02
-      *---------------------         GO TO INC-012.
+               GO TO ACC-SITUAC.
            IF W-OPCAO = "N" OR "n"
                MOVE "* INFORMACOES NAO ALTERADAS *" TO MENS
                PERFORM ROT-MENS THRU ROT-MENS-FIM
-      *---------------------         GO TO INC-013.
+               GO TO ACC-SITUAC.
            IF W-OPCAO NOT = "S" AND "s"
                MOVE "* DIGITE APENAS S=SIM  e  N=NAO *" TO MENS
                PERFORM ROT-MENS THRU ROT-MENS-FIM
@@ -606,5 +605,6 @@
       *
       *--------------------------------------------------------------
       * FIM DE APLICACAO
+      * AUTHOR: VINICIUS ESCAME
       *--------------------------------------------------------------
       *
