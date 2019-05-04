@@ -18,3 +18,16 @@
 # Entregues:
 - ~~Nenhum~~
 - Cadastro de Notas
+
+# COMO EXECUTAR OS PROGRAMAS
+- FORMA MAIS SIMPLES (UTILIZE O DOSBOX)
+	>	COBOL {{NOME_PROGRAMA}},,,	[enter]<br/>
+	>	ISAM<br/>
+	>	RUNCOB {{NOME_PROGRAMA}}	[enter]
+
+- FORMA MAIS DEMORADA (MAIS COMANDOS)
+>	COBOL {{NOME_PROGRAMA}}	[enter]<br/>
+>	NOMEDOPROGRAMA.INT	[enter]<br/>
+>	NOMEDOPROGRAMA.LST	[enter]<br/>
+>	ISAM<br/>
+>	RUNCOB {{NOME_PROGRAMA}}	[enter]
