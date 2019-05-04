@@ -87,7 +87,7 @@
            03 SITUAC-CLI        PIC X(01).
            03 DSCSITUAC-CLI     PIC X(08).
            03 COMPLEM-CLI       PIC X(13).
-           03 FKCEP         PIC 9(08).
+           03 FKCEP             PIC 9(08).
            03 DATNASC.
                05 DIANASC-CLI    PIC 9(02).
                05 MESNASC-CLI    PIC 9(02).
@@ -415,7 +415,8 @@
            ACCEPT TDTPREVISAO
            ACCEPT W-ACT FROM ESCAPE KEY
            IF W-ACT = 02
-               GO TO ACC-MINLOCACAO.
+               IF W-SEL NOT = 1
+                   GO TO ACC-MINLOCACAO.
            IF DTPREVISAO = ZEROS
                MOVE "* DATA INVALIDA *" TO MENS
                PERFORM ROT-MENS THRU ROT-MENS-FIM
@@ -616,7 +617,7 @@
                MOVE 02 TO W-SEL
                GO TO CLEAR-VARS.
            IF W-ACT = 03
-               GO TO ACC-DATALOCACAO.
+               GO TO ACC-DATAPREVISAO.
            IF W-ACT = 04
                GO TO EXC-OPC.
        EXC-OPC.
@@ -642,13 +643,10 @@
        ALT-OPC.
            DISPLAY (24, 40) "ALTERAR  (S/N) : ".
            ACCEPT (24, 57) W-OPCAO
-           ACCEPT W-ACT FROM ESCAPE KEY
-           IF W-ACT = 02
-               GO TO ACCSTATUS-BIKE.
            IF W-OPCAO = "N" OR "n"
                MOVE "* INFORMACOES NAO ALTERADAS *" TO MENS
                PERFORM ROT-MENS THRU ROT-MENS-FIM
-               GO TO ACCSTATUS-BIKE.
+               GO TO CLEAR-VARS.
            IF W-OPCAO NOT = "S" AND "s"
                MOVE "* DIGITE APENAS S=SIM  e  N=NAO *" TO MENS
                PERFORM ROT-MENS THRU ROT-MENS-FIM
