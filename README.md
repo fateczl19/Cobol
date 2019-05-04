@@ -21,14 +21,10 @@
 
 # Comandos para executar o Cobol
 - cobol
-- COMPILAR	COBOL
--	COBOL PROG001.COB	enter
--	      PROG001.INT	enter
--	  	         .LST	enter
--	
--	COBOL PROG001,,,	enter
-- CARREGAR	ISAM	enter
+-	COBOL {{NOME_PROGRAMA}}	[enter]
+-	PROG001.INT	[enter]
+-	       .LST	[enter]
+-	COBOL {{NOME_PROGRAMA}},,,	[enter]
 -	ISAM
-- EXECUTAR PROGRAMA COBOL
--	RUNCOB PROG001	enter
+-	RUNCOB {{NOME_PROGRAMA}}	[enter]
 
