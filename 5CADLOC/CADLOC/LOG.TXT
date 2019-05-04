@@ -1,0 +1,166 @@
+
+            Microsoft COBOL Compiler
+Version 2.20 (C)Copyright Microsoft Corp. 1982-87
+
+
+** Scanning Environment Division...
+** Scanning Data Division...
+0240:Syntax error in SCREEN SECTION description. MINPREVISA
+0241:Semantical error in screen description. 05
+0241:Semantical error in screen description. 05
+ 241             05  TDTENTREGA
+0241:Unrecognizable element is ignored.  TDTENTREGA
+0242:Unrecognizable element is ignored.  LINE
+0242:Semantical error in screen description. 09
+0242:Unrecognizable element is ignored.  COLUMN
+0242:Semantical error in screen description. 14
+0242:Unrecognizable element is ignored.  PIC 
+0242:Improper punctuation. 
+0242:Semantical error in screen description. 99
+0242:Unrecognizable element is ignored.  / 
+0242:Semantical error in screen description. 99
+0242:Unrecognizable element is ignored.  / 
+ 242                 LINE 09  COLUMN 14  PIC 99/99/9999
+0242:Semantical error in screen description. 9999
+0243:Unrecognizable element is ignored.  USING 
+ 243                 USING  DTENTREGA.
+0243:Unrecognizable element is ignored.  DTENTREGA 
+0244:Semantical error in screen description. 05
+ 244             05  THRENTREGA
+0244:Unrecognizable element is ignored.  THRENTREGA
+0245:Unrecognizable element is ignored.  LINE
+0245:Semantical error in screen description. 09
+0245:Unrecognizable element is ignored.  COLUMN
+0245:Semantical error in screen description. 38
+0245:Unrecognizable element is ignored.  PIC 
+0245:Semantical error in screen description. 9 
+0245:Unrecognizable element is ignored.  ( 
+0245:Semantical error in screen description. 02
+ 245                 LINE 09  COLUMN 38  PIC 9(02)
+0245:Unrecognizable element is ignored.  ) 
+0246:Unrecognizable element is ignored.  USING 
+ 246                 USING  HRENTREGA.
+0246:Unrecognizable element is ignored.  HRENTREGA 
+0247:Semantical error in screen description. 05
+ 247             05  TMINENTREGA
+0247:Unrecognizable element is ignored.  TMINENTREGA 
+0248:Unrecognizable element is ignored.  LINE
+0248:Semantical error in screen description. 09
+0248:Unrecognizable element is ignored.  COLUMN
+0248:Semantical error in screen description. 41
+0248:Unrecognizable element is ignored.  PIC 
+0248:Semantical error in screen description. 9 
+0248:Unrecognizable element is ignored.  ( 
+0248:Semantical error in screen description. 02
+ 248                 LINE 09  COLUMN 41  PIC 9(02)
+0248:Unrecognizable element is ignored.  ) 
+0249:Unrecognizable element is ignored.  USING 
+ 249                 USING  MINENTREGA.
+0249:Unrecognizable element is ignored.  MINENTREGA
+0250:Semantical error in screen description. 05
+ 250             05  THRUSO
+0250:Unrecognizable element is ignored.  THRUSO
+0251:Unrecognizable element is ignored.  LINE
+0251:Semantical error in screen description. 10
+0251:Unrecognizable element is ignored.  COLUMN
+0251:Semantical error in screen description. 38
+0251:Unrecognizable element is ignored.  PIC 
+0251:Semantical error in screen description. 9 
+0251:Unrecognizable element is ignored.  ( 
+0251:Semantical error in screen description. 02
+ 251                 LINE 10  COLUMN 38  PIC 9(02)
+0251:Unrecognizable element is ignored.  ) 
+0252:Unrecognizable element is ignored.  USING 
+ 252                 USING  HRUSO.
+0252:Unrecognizable element is ignored.  HRUSO 
+0253:Semantical error in screen description. 05
+ 253             05  TMINUSO
+0253:Unrecognizable element is ignored.  TMINUSO 
+0254:Unrecognizable element is ignored.  LINE
+0254:Semantical error in screen description. 10
+0254:Unrecognizable element is ignored.  COLUMN
+0254:Semantical error in screen description. 41
+0254:Unrecognizable element is ignored.  PIC 
+0254:Semantical error in screen description. 9 
+0254:Unrecognizable element is ignored.  ( 
+0254:Semantical error in screen description. 02
+ 254                 LINE 10  COLUMN 41  PIC 9(02)
+0254:Unrecognizable element is ignored.  ) 
+0255:Unrecognizable element is ignored.  USING 
+ 255                 USING  MINUSO.
+0255:Unrecognizable element is ignored.  MINUSO
+0256:Semantical error in screen description. 05
+ 256             05  TVALLOCACAO
+0256:Unrecognizable element is ignored.  TVALLOCACAO 
+0257:Unrecognizable element is ignored.  LINE
+0257:Semantical error in screen description. 12
+0257:Unrecognizable element is ignored.  COLUMN
+0257:Semantical error in screen description. 19
+0257:Unrecognizable element is ignored.  PIC 
+0257:Improper punctuation. 
+0257:Unrecognizable element is ignored.  ZZZZZ9
+ 257                 LINE 12  COLUMN 19  PIC ZZZZZ9,99
+0257:Semantical error in screen description. 99
+0258:Unrecognizable element is ignored.  USING 
+ 258                 USING  VALLOCACAO.
+0258:Unrecognizable element is ignored.  VALLOCACAO
+0259:Semantical error in screen description. 05
+ 259             05  TVALCOBRADO
+0259:Unrecognizable element is ignored.  TVALCOBRADO 
+0260:Unrecognizable element is ignored.  LINE
+0260:Semantical error in screen description. 13
+0260:Unrecognizable element is ignored.  COLUMN
+0260:Semantical error in screen description. 19
+0260:Unrecognizable element is ignored.  PIC 
+0260:Improper punctuation. 
+0260:Unrecognizable element is ignored.  ZZZZZ9
+ 260                 LINE 13  COLUMN 19  PIC ZZZZZ9,99
+0260:Semantical error in screen description. 99
+0261:Unrecognizable element is ignored.  USING 
+ 261                 USING  VALCOBRADO.
+0261:Unrecognizable element is ignored.  VALCOBRADO
+0262:Semantical error in screen description. 05
+ 262             05  TSTATUS-BIKE
+0262:Unrecognizable element is ignored.  TSTATUS-BIKE
+0263:Unrecognizable element is ignored.  LINE
+0263:Semantical error in screen description. 15
+0263:Unrecognizable element is ignored.  COLUMN
+0263:Semantical error in screen description. 12
+0263:Unrecognizable element is ignored.  PIC 
+0263:Unrecognizable element is ignored.  X 
+0263:Unrecognizable element is ignored.  ( 
+ 263                 LINE 15  COLUMN 12  PIC X(01)
+0263:Semantical error in screen description. ) 
+0264:Unrecognizable element is ignored.  USING 
+ 264                 USING  STATUS-BIKE.
+0264:Unrecognizable element is ignored.  STATUS-BIKE 
+0265:Semantical error in screen description. 05
+ 265             05  TDSCSTATUS-BIKE
+0265:Unrecognizable element is ignored.  TDSCSTATUS-BIKE 
+0266:Unrecognizable element is ignored.  LINE
+0266:Semantical error in screen description. 15
+0266:Unrecognizable element is ignored.  COLUMN
+0266:Semantical error in screen description. 16
+0266:Unrecognizable element is ignored.  PIC 
+0266:Unrecognizable element is ignored.  X 
+0266:Unrecognizable element is ignored.  ( 
+0266:Semantical error in screen description. 08
+ 266                 LINE 15  COLUMN 16  PIC X(08)
+0266:Unrecognizable element is ignored.  ) 
+0267:Unrecognizable element is ignored.  USING 
+ 267                 USING  DSCSTATUS-BIKE.
+0267:Unrecognizable element is ignored.  DSCSTATUS-BIKE
+ 271         PROCEDURE DIVISION.
+** Compiling Procedure Division...
+0420:Procedure-name is unresolvable. ACC-DATAPREVISAOFIM 
+ 421    
+0423:Statement deleted due to erroneous syntax. TSTATUS-BIKE
+ 424             ACCEPT W-ACT FROM ESCAPE KEY
+** Generating Object Code...
+0674:Procedure-name is unresolvable. ACC-DATAENTREGAFIM
+
+  121 errors or warnings
+
+   Data area size =  3282
+   Code area size =  4412
+
