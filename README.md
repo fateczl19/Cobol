@@ -18,3 +18,17 @@
 # Entregues:
 - ~~Nenhum~~
 - Cadastro de Notas
+
+-Comandos para executar o Cobol
+cobol
+COMPILAR	COBOL
+	COBOL PROG001.COB	enter
+	      PROG001.INT	enter
+	  	         .LST	enter
+	
+	COBOL PROG001,,,	enter
+CARREGAR	ISAM	enter
+	ISAM
+EXECUTAR PROGRAMA COBOL
+	RUNCOB PROG001	enter
+
