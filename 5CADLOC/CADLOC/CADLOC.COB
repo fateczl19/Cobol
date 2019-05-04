@@ -412,11 +412,17 @@
                NEXT SENTENCE.
        
        ACC-DATAPREVISAO.
+           DISPLAY (01, 02) W-SEL
            ACCEPT TDTPREVISAO
            ACCEPT W-ACT FROM ESCAPE KEY
            IF W-ACT = 02
                IF W-SEL NOT = 1
-                   GO TO ACC-MINLOCACAO.
+                   GO TO ACC-MINLOCACAO
+               ELSE
+                   MOVE "* NAO PODE ALTERAR CHAVES *"
+                       TO MENS
+                   PERFORM ROT-MENS THRU ROT-MENS-FIM
+                   GO TO ACC-DATAPREVISAO.
            IF DTPREVISAO = ZEROS
                MOVE "* DATA INVALIDA *" TO MENS
                PERFORM ROT-MENS THRU ROT-MENS-FIM
