@@ -18,13 +18,3 @@
 # Entregues:
 - ~~Nenhum~~
 - Cadastro de Notas
-
-# Comandos para executar o Cobol
-- cobol
--	COBOL {{NOME_PROGRAMA}}	[enter]
--	PROG001.INT	[enter]
--	       .LST	[enter]
--	COBOL {{NOME_PROGRAMA}},,,	[enter]
--	ISAM
--	RUNCOB {{NOME_PROGRAMA}}	[enter]
-
