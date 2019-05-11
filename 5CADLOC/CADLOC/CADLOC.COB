@@ -134,6 +134,15 @@
        77 WHORAS       PIC 9(02) VALUE ZEROS.
        77 WMINUTOS     PIC 9(02) VALUE ZEROS.
       *
+       77 WFLAGDATMEN  PIC 9(01) VALUE ZEROS.
+       77 DIALOCTMP    PIC 9(02) VALUE ZEROS.
+       77 MESLOCTMP    PIC 9(02) VALUE ZEROS.
+       77 ANOLOCTMP    PIC 9(04) VALUE ZEROS.
+      *
+       77 DIATMP       PIC 9(02) VALUE ZEROS.
+       77 MESTMP       PIC 9(02) VALUE ZEROS.
+       77 ANOTMP       PIC 9(04) VALUE ZEROS.
+      *
       *--------------------------------------------------------------
       *
        77 W-SEL        PIC 9(01) VALUE ZEROS.
@@ -428,8 +437,11 @@
                PERFORM ROT-MENS THRU ROT-MENS-FIM
                GO TO ACC-DATAPREVISAO.
            MOVE 2 TO WFLAGDAT
-           GO TO VALIDARDATAS.
-       ACC-DATAPREVISAOFIM.
+      ACC-DATAPREVISAOFIM.
+          IF WFLAGDAT NOT = 0
+              GO TO VALIDARDATAS
+          ELSE
+              PERFORM VALDATPREV.
        
        ACC-HORAPREVISAO.
            ACCEPT THRPREVISAO
@@ -696,6 +708,50 @@
        ROT-MENS-FIM.
            EXIT.
        ROT-ALFA-FIM.
+      *
+      * DIA-PREV
+      * MES-PREV
+      * ANO-PREV
+      *
+      VALDATPREV.
+          IF ANO-PREV > ANO-LOCA OR ANO-PREV = ANO-LOCA
+              IF MES-PREV > MES-LOCA OR MES-PREV = MES-LOCA
+                  IF DIA-PREV > DIA-LOCA
+                      EXIT.
+                  ELSE
+                      MOVE "* DATA DEVE SER MAIOR *" TO MENS
+                      PERFORM ROT-MENS THRU ROT-MENS-FIM
+                      GO TO ACC-DATAPREVISAO.
+              ELSE
+                  MOVE "* DATA DEVE SER MAIOR *" TO MENS
+                  PERFORM ROT-MENS THRU ROT-MENS-FIM
+                  GO TO ACC-DATAPREVISAO.
+          ELSE
+              MOVE "* DATA DEVE SER MAIOR *" TO MENS
+              PERFORM ROT-MENS THRU ROT-MENS-FIM
+              GO TO ACC-DATAPREVISAO.
+      *
+      * DIA-ENTR
+      * MES-ENTR
+      * ANO-ENTR
+      *
+       VALDATENTR.
+           IF ANO-ENTR > ANO-LOCA OR ANO-ENTR = ANO-LOCA
+              IF MES-ENTR > MES-LOCA OR MES-ENTR = MES-LOCA
+                  IF DIA-ENTR > DIA-LOCA
+                      EXIT.
+                  ELSE
+                      MOVE "* DATA DEVE SER MAIOR *" TO MENS
+                      PERFORM ROT-MENS THRU ROT-MENS-FIM
+                      GO TO ACC-DATAENTREGA.
+              ELSE
+                  MOVE "* DATA DEVE SER MAIOR *" TO MENS
+                  PERFORM ROT-MENS THRU ROT-MENS-FIM
+                  GO TO ACC-DATAENTREGA.
+          ELSE
+              MOVE "* DATA DEVE SER MAIOR *" TO MENS
+              PERFORM ROT-MENS THRU ROT-MENS-FIM
+              GO TO ACC-DATAENTREGA.
       *
       *--------------------------------------------------------------
       *     VALIDACAO DE HORAS
